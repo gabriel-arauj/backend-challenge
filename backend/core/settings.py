@@ -18,11 +18,10 @@ from decouple import config
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 
-SECRET_KEY = config("SECRET_KEY", default="changeme")
+SECRET_KEY = config("SECRET_KEY", default="Change_me")
 
 DEBUG = config("DEBUG", default=True, cast=bool)
 
-ENV = config("ENV", default="local")
 
 ALLOWED_HOSTS = []
 
@@ -130,3 +129,17 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# Sending email settings
+
+EMAIL_BACKEND ='django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = config('EMAIL_HOST', default='smtp.gmail.com')
+EMAIL_USE_TLS = True
+EMAIL_PORT = config('EMAIL_PORT', default=587)
+EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='Change_me')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='Change_me')
+
+# Celery settings
+
+
+CELERY_BROKER_URL= 'pyamqp://rabbitmq:5672'

@@ -1,6 +1,9 @@
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
-from ..users.models import User
+from backend.users.models import User
+from .tasks import send_email
+
+
 
 class RegularPlan(models.Model):
     CYCLE_CHOICES = (
@@ -32,3 +35,18 @@ class RegularPlan(models.Model):
 
     def __str__(self):
         return self.name
+
+    def __init__(self, *args, **kwargs):
+        super(RegularPlan, self).__init__(*args, **kwargs)
+        self.old_publish = self.publish
+
+    def save(self, **kwargs):
+        # Check if publish changed to True and send a email
+        add.delay(1,1)
+        if self.publish == True:
+            if self.old_publish != self.publish or self.id == None:
+                subject = f"Your Regular Plan:{self.name} has been published"
+                message = f"Hello, {self.owner.username}\n\n Your Regular Plan: {self.name} has been published!"
+                to_email = self.owner.email
+                send_email.delay(subject, message, to_email)
+        super().save(**kwargs)

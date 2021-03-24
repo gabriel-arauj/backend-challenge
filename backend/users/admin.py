@@ -11,7 +11,6 @@ class CustomUserAdmin(UserAdmin):
     fieldsets = (
         (None, {'fields': ('username',)}),
         (_('Personal info'), {'fields': ('first_name', 'last_name', 'email')}),
-        (None, {'fields': ('regularplans', )}),
     )
 
 admin.site.register(User, CustomUserAdmin)

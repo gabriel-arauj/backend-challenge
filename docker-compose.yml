@@ -9,13 +9,34 @@ services:
       - POSTGRES_DB=${DB_NAME}
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
+  broker:
+    container_name: rabbitmq
+    hostname: rabbitmq
+    image: rabbitmq:latest
+    ports:
+      - "5672:5672"
+    restart: on-failure
+
   web:
     build: .
     entrypoint: /entrypoint.sh
     command: python manage.py runserver 0.0.0.0:8000
     volumes:
       - .:/code
+    image: web-app-image
     ports:
       - "8000:8000"
     depends_on:
       - db
+      - broker
+
+  celery_worker:
+    command: sh -c "celery -A backend.core.celery worker -l info"
+    container_name: celery_worker
+    depends_on:
+      - web
+      - db
+      - broker
+    hostname: celery_worker
+    image: web-app-image
+    restart: on-failure
