@@ -1,6 +1,7 @@
-from backend.core.celery import app 
+import subprocess
 from django.core.mail import BadHeaderError, send_mail
 from backend.core.settings import EMAIL_HOST_USER
+from backend.core.celery import app 
 
 @app.task
 def send_email(subject, message, to_email):
@@ -17,3 +18,8 @@ def send_email(subject, message, to_email):
 @app.task(bind=True)
 def debug_task(self):
     print('Request: {0!r}'.format(self.request))
+
+@app.task
+def exports_to_mongo():
+    subprocess.call('./pg2mongo.sh')
+    print('ROLOu--------------------')

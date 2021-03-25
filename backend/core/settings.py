@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 from pathlib import Path
 
 from decouple import config
+from celery.schedules import crontab
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
@@ -36,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'django_celery_beat',
     'backend.users',
     'backend.regularplans',
 ]
@@ -88,6 +90,17 @@ DATABASES = {
         'PASSWORD': DB_PASSWORD,
         'HOST': DB_HOST,
         'PORT': DB_PORT,
+    },
+    'mongo_db': {
+        'ENGINE': 'djongo',
+        'NAME': config("MONGO_INITDB_DATABASE", default="challengeproject"),
+        'CLIENT': {
+            'host': config("MONGO_DB_HOST", default="mongo"),
+            'port': config("MONGO_DB_PORT", default=27017),
+            'username': config("MONGO_INITDB_ROOT_USERNAME", default="root"),
+            'password': config("MONGO_INITDB_ROOT_PASSWORD", default="example"),
+            'authSource': config("MONGO_DB_AUTH", default="admin"), # usually admin
+        } 
     }
 }
 
@@ -141,5 +154,11 @@ EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='Change_me')
 
 # Celery settings
 
-
 CELERY_BROKER_URL= 'pyamqp://rabbitmq:5672'
+# running the task every 5 minutes for example purposes.
+CELERY_BEAT_SCHEDULE = {
+    'exports_to_mongoe_very_five_minutes': {
+        'task': 'backend.regularplans.tasks.exports_to_mongo',
+        "schedule": crontab(minute="*/5"),
+    }
+}

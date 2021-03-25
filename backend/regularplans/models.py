@@ -42,7 +42,6 @@ class RegularPlan(models.Model):
 
     def save(self, **kwargs):
         # Check if publish changed to True and send a email
-        add.delay(1,1)
         if self.publish == True:
             if self.old_publish != self.publish or self.id == None:
                 subject = f"Your Regular Plan:{self.name} has been published"

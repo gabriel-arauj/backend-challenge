@@ -4,11 +4,38 @@ services:
   db:
     image: postgres
     volumes:
-      - ./data/db:/var/lib/postgresql/data
+      - ./.docker/postgres/data/db:/var/lib/postgresql/data
     environment:
       - POSTGRES_DB=${DB_NAME}
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
+
+  mongo:
+    image: mongo:latest
+    container_name: mongodb
+    volumes:
+      - ./.docker/mongodb/mongod.conf:/etc/mongod.conf
+      - ./.docker/mongodb/initdb.d/:/docker-entrypoint-initdb.d/
+      - ./.docker/mongodb/data/db/:/data/db/
+      - ./.docker/mongodb/data/log/:/var/log/mongodb/
+    env_file:
+      - .env
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+      MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
+    ports:
+        - "27017:27017"
+
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: example
+
   broker:
     container_name: rabbitmq
     hostname: rabbitmq
@@ -29,6 +56,9 @@ services:
     depends_on:
       - db
       - broker
+      - mongo
+    links: 
+      - mongo
 
   celery_worker:
     command: sh -c "celery -A backend.core.celery worker -l info"
@@ -38,5 +68,15 @@ services:
       - db
       - broker
     hostname: celery_worker
+    image: web-app-image
+    restart: on-failure
+
+  celery_beat:
+    command: sh -c "celery -A backend.core beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler"
+    container_name: celery_beat
+    depends_on:
+      - web
+      - db
+      - broker
     image: web-app-image
     restart: on-failure
