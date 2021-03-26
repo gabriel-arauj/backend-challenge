@@ -22,4 +22,3 @@ def debug_task(self):
 @app.task
 def exports_to_mongo():
     subprocess.call('./pg2mongo.sh')
-    print('ROLOu--------------------')
