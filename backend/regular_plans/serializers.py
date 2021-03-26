@@ -1,10 +1,9 @@
-from django.contrib.auth.models import  Group
-from .models import RegularPlan
 from rest_framework import serializers
+
+from .models import RegularPlan
 
 
 class RegularPlanSerializer(serializers.ModelSerializer):
     class Meta:
         model = RegularPlan
-        fields = '__all__'
-
+        fields = "__all__"

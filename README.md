@@ -76,6 +76,34 @@ Then start celery:
 make celery
 ```
 
+## []()Running the linters
+
+To run the linters (flake8, black and isort):
+
+```
+make linters
+```
+
+To run only pyflakes and checks unused imports:
+
+```
+make pyflakes
+```
+
+To run only isort:
+
+```
+make isort
+```
+
+To run only black:
+
+```
+make black
+```
+
+
+
 ## []()Built With
 
 - [Django Rest Framework](https://www.django-rest-framework.org/)
@@ -91,16 +119,16 @@ First you need to authenticate yourself to be able to do anything. Use the meke 
 #### List Regular Plans
 lists all plans owned by the user
 
-`GET /regularplans`
+`GET /regular-plans`
 
 lists all plans with publish=true
 
-`GET /regularplans?publish=true`
+`GET /regular-plans?publish=true`
 
 #### Create a Regular Plan
 Create Regular Plan for the the User
 
-`POST /regularplans`
+`POST /regular-plans`
 
 ```json
 {
@@ -122,10 +150,10 @@ Create Regular Plan for the the User
 ```
 #### Detail Regular Plan
 Show information for a Regular plan owned by the user
-`GET /regularplans/:id/`
+`GET /regular-plans/:id/`
 
 Update information for a Regular plan owned by the user
-`PUT /regularplans/:id/`
+`PUT /regular-plans/:id/`
 # Improvements:
 
 - django structure patterns and code style

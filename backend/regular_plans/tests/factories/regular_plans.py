@@ -1,11 +1,20 @@
 import factory
+from django.contrib.auth.models import User
 from factory import fuzzy
 from faker import Faker
 
-from backend.regularplans.models import RegularPlan
-from backend.users.tests.factories.users import UserFactory
+from backend.regular_plans.models import RegularPlan
 
 fake = Faker()
+
+
+class UserFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = User
+
+    username = fake.name()
+    email = fake.email()
+    password = factory.PostGenerationMethodCall("set_password", "password")
 
 
 class RegularPlansFactory(factory.django.DjangoModelFactory):
